@@ -5,8 +5,8 @@ export default {
 	},
 	db: {
 		host: 'localhost',
-		user: 'syafrullah',
-		password: 'password123',
+		user: 'root',
+		password: '12199727',
 		database: 'restaurant_db'
 	}
 };

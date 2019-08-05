@@ -16,6 +16,38 @@ exports.all = async (req, res) => {
 	});
 };
 
+exports.name = async (req, res) => {
+	const collectionName = req.body.collection_name;
+	const restaurants = req.body.restaurants;
+
+	console.log(collectionName);
+	console.log(JSON.stringify(restaurants));
+
+	await connection.query(`INSERT INTO collection (collection_name) VALUES (?)`, [collectionName],
+		function (err, rows, fields) {
+			if (err) {
+				console.log(err);
+				console.log(err.code);
+			} else {
+				Promise.all(
+					restaurants.map(item => {
+						connection.query(`INSERT INTO relation (collection_id, restaurant_id) 
+										VALUES ((SELECT collection_id FROM collection WHERE collection_name = ?), ?)`,
+						[collectionName, item],
+						function (err, rows, fields) {
+							if (err) {
+								console.log(err);
+								console.log(err.code);
+							}
+						});
+					})
+				).then(
+					res.json('Successfully added new Collections.')
+				);
+			}
+		});
+};
+
 exports.id = async (req, res) => {
 	const id = req.params.id;
 	await connection.query(`SELECT col.*, res.* 
@@ -51,3 +83,4 @@ exports.id = async (req, res) => {
 			}
 		});
 };
+
